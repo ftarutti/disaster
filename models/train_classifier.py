@@ -20,6 +20,14 @@ import pickle
 
 
 def load_data(database_filepath):
+    """loads the data from the database and split into target categories and messages
+
+    Args:
+        database_filepath (str): path to the database
+
+    Returns:
+        tuple of (Series, DataFrame, Index): Messages, Categories related to the messages, category names
+    """
     engine = create_engine('sqlite:///'+database_filepath)
     df = pd.read_sql_table('messages_cleaned', engine)
     X = df.message
@@ -52,6 +60,15 @@ def tokenize(text):
 
 
 def build_model(X_train,Y_train):
+    """build a model for prediction of categories to disaster messages
+
+    Args:
+        X_train (DataFrame): Training input messages
+        Y_train (DataFrame): Training related categories 
+
+    Returns:
+        Pipeline : The best model after cross-validation for hyperparameter optimization.
+    """
 
     subset_size = 100#round(0.2*len(X_train))  # size of the random subset for parameter tuning
 
@@ -80,7 +97,14 @@ def build_model(X_train,Y_train):
     return best_model
 
 
-def evaluate_model(model, X_test, Y_test, category_names):
+def evaluate_model(model, X_test, Y_test):
+    """Creates a classification report to evaluate the model
+
+    Args:
+        model (Pipeline): model to evaluate
+        X_test (DataFrame): Test data - messages
+        Y_test (DataFrame): Test data - categories related to the messages
+    """
     y_pred = model.predict(X_test)
 
     print(y_pred)
@@ -102,6 +126,12 @@ def evaluate_model(model, X_test, Y_test, category_names):
 
 
 def save_model(model, model_filepath):
+    """saves the model to pickle
+
+    Args:
+        model (Pipeline): the model to be saved
+        model_filepath (str): the output path 
+    """
     with open(model_filepath, 'wb') as file:
         pickle.dump(model, file)
 
