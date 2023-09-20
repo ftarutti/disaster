@@ -4,6 +4,8 @@ import pandas as pd
 import numpy as np
 
 from nltk.tokenize import word_tokenize
+from nltk.stem import WordNetLemmatizer
+
 
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import train_test_split, GridSearchCV
@@ -37,8 +39,16 @@ def tokenize(text):
     Returns:
         list of str: A list of tokens (words) from the input text.
     """
+    text =  text.lower()
     tokens = word_tokenize(text)
-    return tokens
+
+    # Initialize the WordNet lemmatizer
+    lemmatizer = WordNetLemmatizer()
+    
+    # Lemmatize each token
+    lemmatized_tokens = [lemmatizer.lemmatize(token) for token in tokens]
+    
+    return lemmatized_tokens
 
 
 def build_model(X_train,Y_train):

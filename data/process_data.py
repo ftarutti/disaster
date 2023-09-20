@@ -6,6 +6,15 @@ from sqlalchemy import create_engine
 
 
 def load_data(messages_filepath, categories_filepath):
+    """Loading and transforming the data to get it into a format on which a model can be estimated.
+
+    Args:
+        messages_filepath (str): path of disaster_messages.csv
+        categories_filepath (str): path of disaster_categories
+
+    Returns:
+        DataFrame: DataFrame containing the messages and the associated categories 
+    """
     messages = pd.read_csv(messages_filepath)
     categories = pd.read_csv(categories_filepath)
     # merge messages and categories
@@ -35,13 +44,29 @@ def load_data(messages_filepath, categories_filepath):
     return df
 
 def clean_data(df):
+    """Remove duplicates and nonsense expressions to clean the data
+
+    Args:
+        df (DataFrame): Initial data containing messages and their categories
+
+    Returns:
+        DataFrame: cleaned DataFrame
+    """
     df = df.drop_duplicates()
+    df = df[df['related'] != 2]
+
     return df
 
 
 def save_data(df, database_filename):
+    """save the data to a SQL Database
+
+    Args:
+        df (DataFrame): data to be saved
+        database_filename (str): filename of the database
+    """
     engine = create_engine('sqlite:///'+database_filename)
-    df.to_sql('messages_cleaned', engine, index=False)  
+    df.to_sql('messages_cleaned', engine, index=False, if_exists='replace'  )
 
 
 def main():
